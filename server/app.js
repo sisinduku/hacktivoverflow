@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use('/api/auth', AuthRoute);
+app.use('/api/auth', AuthRoute);
 
 app.listen(process.env.PORT || 3000, () => {
   console.log('Hello from port: 3000');
