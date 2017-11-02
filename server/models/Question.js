@@ -7,7 +7,6 @@ mongoose.connection.openUri(process.env.MONGO_URL_DEV)
 let questionSchema = new Schema({
   slug: {
     type: String,
-    required: true
   },
   title: {
     type: String,
@@ -22,11 +21,11 @@ let questionSchema = new Schema({
     ref: 'User',
     required: true
   },
-  upvotes: [{
+  upvoters: [{
     type: Schema.Types.ObjectId,
     ref: 'User'
   }],
-  downvotes: [{
+  downvoters: [{
     type: Schema.Types.ObjectId,
     ref: 'User'
   }],
