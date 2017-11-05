@@ -1,6 +1,6 @@
-# hactivoverflow
+# hacktiv-overflow
 
-> Hactiv Overflow
+> Hactiv8 Overflow
 
 ## Build Setup
 

@@ -5,9 +5,14 @@ import App from './App'
 import router from './router'
 
 import axios from 'axios'
-import FBSignInButton from 'vue-facebook-signin-button'
+import BootstrapVue from 'bootstrap-vue'
+import store from './vuex/store'
 
-Vue.use(FBSignInButton)
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+Vue.use(BootstrapVue)
+
 Vue.prototype.$http = axios.create({
   baseURL: 'http://localhost:3000'
 })
@@ -18,6 +23,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: {
     App

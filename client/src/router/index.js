@@ -1,15 +1,24 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import HomeComponent from '@/components/HomeComponent'
+import QuestionsSummaryComponent from '@/components/QuestionsSummaryComponent'
 
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'Hello',
-      component: HelloWorld
-    }
-  ]
+  routes: [{
+    path: '/',
+    component: HomeComponent,
+    children: [{
+      path: '',
+      name: 'home',
+      component: QuestionsSummaryComponent,
+      props: true
+    }, {
+      path: '',
+      name: 'detail',
+      component: QuestionsSummaryComponent,
+      props: true
+    }]
+  }]
 })
