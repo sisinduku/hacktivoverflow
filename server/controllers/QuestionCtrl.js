@@ -113,7 +113,7 @@ class QuestionCtrl {
 
   static upvoteQuestion(req, res, next) {
     Question.findOneAndUpdate({
-        _id: req.body.questionId
+        _id: req.params.questionId
       }, {
         $push: {
           upvoters: req.body.user
@@ -132,7 +132,7 @@ class QuestionCtrl {
 
   static downvoteQuestion(req, res, next) {
     Question.findOneAndUpdate({
-        _id: req.body.questionId
+        _id: req.params.questionId
       }, {
         $push: {
           downvoters: req.body.user
@@ -151,7 +151,7 @@ class QuestionCtrl {
 
   static unvoteQuestion(req, res, next) {
     Question.findOneAndUpdate({
-        _id: req.body.questionId
+        _id: req.params.questionId
       }, {
         $pull: {
           downvoters: req.body.user
