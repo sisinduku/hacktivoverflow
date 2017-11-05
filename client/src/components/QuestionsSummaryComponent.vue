@@ -4,7 +4,7 @@
       <b-list-group-item v-for="question in questions" :key="question._id" class="text-left">
         <h2>{{question.title}}</h2>
         <p>{{formatSummary(question.content)}}</p>
-        <b-button size="sm" variant="primary" :to="{name: 'detail', params: {id: question._id}}">
+        <b-button size="sm" variant="primary" :to="{name: 'detail', params: {slug: question.slug}}">
           Read More
         </b-button>
       </b-list-group-item>
