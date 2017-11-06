@@ -7,10 +7,10 @@
         <!-- Right aligned nav items -->
         <b-nav is-nav-bar class="ml-auto">
           <b-nav-form>
-            <b-button v-if="Object.keys(user).length === 0" size="sm" variant="primary" @click="loginFB">
+            <b-button v-if="!isLogin" size="sm" variant="primary" @click="loginFB">
               Sign in with Facebook
             </b-button>
-            <b-btn v-if="Object.keys(user).length !== 0" size="sm" variant="danger" @click="logout">
+            <b-btn v-else size="sm" variant="danger" @click="logout">
               Logout
             </b-btn>
           </b-nav-form>
@@ -20,11 +20,12 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex'
 export default {
   name: 'NavbarComponent',
 
   computed: {
+    ...mapState(['isLogin']),
     ...mapGetters(['user'])
   },
 
@@ -42,7 +43,7 @@ export default {
     },
     logout () {
       window.localStorage.removeItem('token')
-      this.$store.commit('setUser', {})
+      this.$store.commit('logout')
     },
     ...mapActions(['getToken'])
   },

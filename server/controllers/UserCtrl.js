@@ -31,6 +31,7 @@ class UserCtrl {
         })
         .then((user) => {
           let token = jwt.sign({
+            _id: user._id,
             userID: result.id,
             name: result.name,
             email: result.email

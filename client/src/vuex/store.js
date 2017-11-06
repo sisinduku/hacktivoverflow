@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import jwtDecode from 'jwt-decode'
 
 const http = axios.create({
   baseURL: 'http://localhost:3000'
@@ -12,7 +13,10 @@ export default new Vuex.Store({
 
   state: {
     questions: [],
-    user: {}
+    user: {
+      userID: ''
+    },
+    isLogin: false
   },
 
   getters: {
@@ -28,22 +32,19 @@ export default new Vuex.Store({
       state.questions.push(payload)
     },
     setUser: (state, payload) => {
-      if (Object.keys(payload)
-        .length !== 0) {
-        Vue.set(state.user, '_id', payload._id)
-        Vue.set(state.user, 'userID', payload.userID)
-        Vue.set(state.user, 'name', payload.name)
-        Vue.set(state.user, 'email', payload.email)
-        Vue.set(state.user, 'profilePic', payload.profilePic)
-        Vue.set(state.user, 'lastLogin', payload.lastLogin)
-      } else {
-        Vue.delete(state.user, '_id')
-        Vue.delete(state.user, 'userID')
-        Vue.delete(state.user, 'name')
-        Vue.delete(state.user, 'email')
-        Vue.delete(state.user, 'profilePic')
-        Vue.delete(state.user, 'lastLogin')
+      const token = window.localStorage.getItem('token')
+      if (token) {
+        const decodedUser = jwtDecode(token)
+        console.log(decodedUser)
+        state.isLogin = true
+        state.user = decodedUser
       }
+    },
+    logout: (state, payload) => {
+      state.isLogin = false
+      state.user = Object.assign({}, state.user, {
+        userID: ''
+      })
     }
   },
 
@@ -60,7 +61,6 @@ export default new Vuex.Store({
         })
     },
     postQuestion: (context, payload) => {
-      console.log(payload)
       http.post(`/api/questions/post_question`, {
         title: payload.title,
         content: payload.content,
@@ -86,14 +86,8 @@ export default new Vuex.Store({
           data
         }) => {
           localStorage.setItem('token', data.token)
-          context.commit('setUser', {
-            _id: data._id,
-            userID: data.userID,
-            name: data.name,
-            email: data.email,
-            profilePic: data.profilePic,
-            lastLogin: data.lastLogin
-          })
+          context.commit('setUser')
+          context.dispatch('getAllQuestions', data._id)
         })
     }
   }

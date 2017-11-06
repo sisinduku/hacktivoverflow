@@ -1,19 +1,19 @@
 <template>
   <div id='QuestionsSummaryComponent'>
     <b-list-group>
-      <b-list-group-item v-for="question in questions" :key="question._id" class="text-left">
+      <b-list-group-item v-for="(question, index) in questions" :key="question._id" class="text-left">
         <h2>{{question.title}}</h2>
         <p>{{formatSummary(question.content)}}</p>
         <b-button size="sm" variant="primary" :to="{name: 'detail', params: {slug: question.slug}}">
           Read More
         </b-button>
-        <b-button v-if="(question.voted === 'unvote' || question.voted === 'downvoted') && Object.keys(user).length !== 0" size="sm" variant="primary" @click="upVote(question._id)">
+        <b-button v-if="(question.voted === 'unvote' || question.voted === 'downvoted') && isLogin" size="sm" variant="primary" @click="upVote(question._id)">
           <span class="fa fa-thumbs-up"></span>
         </b-button>
-        <b-button v-if="(question.voted === 'unvote' || question.voted === 'upvoted') && Object.keys(user).length !== 0" size="sm" variant="danger" @clock="downVote(question._id)">
+        <b-button v-if="(question.voted === 'unvote' || question.voted === 'upvoted') && isLogin" size="sm" variant="danger" @clock="downVote(question._id)">
           <span class="fa fa-thumbs-down"></span>
         </b-button>
-        <b-button v-if="isQuestionOwner(question)" size="sm" variant="info" @clock="downVote(question._id)">
+        <b-button v-if="isLogin && questions[index].author.userID === user.userID" size="sm" variant="info" @clock="downVote(question._id)">
           <span class="fa fa-edit"></span>Edit
         </b-button>
       </b-list-group-item>
@@ -22,31 +22,21 @@
 </template>
 <script>
 import striptags from 'striptags'
-import {mapGetters} from 'vuex'
+// import jwtDecode from 'jwt-decode'
+import { mapGetters, mapState } from 'vuex'
 export default {
   name: 'QuestionsSummaryComponent',
-
-  props: ['questions'],
-
-  data: () => ({}),
-
   computed: {
-    ...mapGetters(['user'])
+    ...mapState([
+      'isLogin'
+    ]),
+    ...mapGetters([
+      'user',
+      'questions'
+    ])
   },
 
   methods: {
-    isQuestionOwner (question) {
-      if (Object.keys(this.user).length === 0) {
-        console.log('halo')
-        return false
-      } else {
-        if (this.user._id === question.author._id) {
-          return true
-        } else {
-          return false
-        }
-      }
-    },
     formatSummary (value) {
       let striped = striptags(value)
       if (striped.length > 200) {

@@ -13,12 +13,12 @@
       <b-col md="9">
         <b-row align-h="start">
           <b-col md="1">
-            <UserComponent v-if="Object.keys(user).length !== 0"></UserComponent>
+            <UserComponent v-if="isLogin"></UserComponent>
           </b-col>
         </b-row>
         <b-row>
           <b-col md="12">
-            <router-view :questions="questions"></router-view>
+            <router-view></router-view>
           </b-col>
         </b-row>
       </b-col>
@@ -45,6 +45,7 @@ export default {
   data: () => ({}),
 
   computed: {
+    ...Vuex.mapState(['isLogin']),
     ...Vuex.mapGetters(['questions', 'user'])
   },
 

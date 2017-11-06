@@ -5,8 +5,17 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
-  name: 'app'
+  name: 'app',
+  created () {
+    this.setUser()
+  },
+  methods: {
+    ...mapMutations([
+      'setUser'
+    ])
+  }
 }
 </script>
 
@@ -16,6 +25,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;  
+  color: #2c3e50;
 }
 </style>
