@@ -30,12 +30,14 @@ export default new Vuex.Store({
     setUser: (state, payload) => {
       if (Object.keys(payload)
         .length !== 0) {
+        Vue.set(state.user, '_id', payload._id)
         Vue.set(state.user, 'userID', payload.userID)
         Vue.set(state.user, 'name', payload.name)
         Vue.set(state.user, 'email', payload.email)
         Vue.set(state.user, 'profilePic', payload.profilePic)
         Vue.set(state.user, 'lastLogin', payload.lastLogin)
       } else {
+        Vue.delete(state.user, '_id')
         Vue.delete(state.user, 'userID')
         Vue.delete(state.user, 'name')
         Vue.delete(state.user, 'email')
@@ -58,7 +60,12 @@ export default new Vuex.Store({
         })
     },
     postQuestion: (context, payload) => {
-      http.post(`/api/questions/post_question`)
+      console.log(payload)
+      http.post(`/api/questions/post_question`, {
+        title: payload.title,
+        content: payload.content,
+        author: payload.author
+      })
         .then(({
           data
         }) => {
@@ -80,6 +87,7 @@ export default new Vuex.Store({
         }) => {
           localStorage.setItem('token', data.token)
           context.commit('setUser', {
+            _id: data._id,
             userID: data.userID,
             name: data.name,
             email: data.email,

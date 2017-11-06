@@ -7,11 +7,22 @@ import router from './router'
 import axios from 'axios'
 import BootstrapVue from 'bootstrap-vue'
 import store from './vuex/store'
+import wysiwyg from 'vue-wysiwyg'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'vue-wysiwyg/dist/vueWysiwyg.css'
 
 Vue.use(BootstrapVue)
+Vue.use(wysiwyg, {
+  image: {
+    uploadURL: '/api/myEndpoint'
+  },
+  hideModules: {
+    'table': true,
+    'image': true
+  }
+})
 
 Vue.prototype.$http = axios.create({
   baseURL: 'http://localhost:3000'

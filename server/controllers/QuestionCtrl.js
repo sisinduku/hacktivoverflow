@@ -3,13 +3,15 @@ const mongoose = require('mongoose');
 
 class QuestionCtrl {
   static postQuestion(req, res, next) {
+    console.log(req.body);
     Question.create({
         title: req.body.title,
         content: req.body.content,
         author: req.body.author,
       })
       .then((question) => {
-        res.status(201).json(question);
+        res.status(201)
+          .json(question);
       })
   }
 
@@ -57,7 +59,8 @@ class QuestionCtrl {
             path: "author"
           })
           .then((questionsPopulated) => {
-            res.status(200).json(questionsPopulated);
+            res.status(200)
+              .json(questionsPopulated);
           })
       })
   }
@@ -106,7 +109,8 @@ class QuestionCtrl {
             path: "author"
           })
           .then((questionPopulated) => {
-            res.status(200).json(questionPopulated[0]);
+            res.status(200)
+              .json(questionPopulated[0]);
           })
       })
   }
@@ -122,11 +126,13 @@ class QuestionCtrl {
         new: true
       })
       .then((question) => {
-        res.status(200).json(question);
+        res.status(200)
+          .json(question);
       })
       .catch((err) => {
         console.error(err);
-        res.status(400).json(err);
+        res.status(400)
+          .json(err);
       })
   }
 
@@ -141,11 +147,13 @@ class QuestionCtrl {
         new: true
       })
       .then((question) => {
-        res.status(200).json(question);
+        res.status(200)
+          .json(question);
       })
       .catch((err) => {
         console.error(err);
-        res.status(400).json(err);
+        res.status(400)
+          .json(err);
       })
   }
 
@@ -163,11 +171,13 @@ class QuestionCtrl {
         new: true
       })
       .then((question) => {
-        res.status(200).json(question);
+        res.status(200)
+          .json(question);
       })
       .catch((err) => {
         console.error(err);
-        res.status(400).json(err);
+        res.status(400)
+          .json(err);
       })
   }
 }

@@ -11,7 +11,16 @@
         <SidebarComponent :questions="questions"></SidebarComponent>
       </b-col>
       <b-col md="9">
-        <router-view :questions="questions"></router-view>
+        <b-row align-h="start">
+          <b-col md="1">
+            <UserComponent v-if="Object.keys(user).length !== 0"></UserComponent>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col md="12">
+            <router-view :questions="questions"></router-view>
+          </b-col>
+        </b-row>
       </b-col>
       </b-col>
     </b-row>
@@ -22,18 +31,21 @@
 import Vuex from 'vuex'
 import NavbarComponent from './NavbarComponent.vue'
 import SidebarComponent from './SidebarComponent.vue'
+import UserComponent from './UserComponent.vue'
+
 export default {
   name: 'HomeComponent',
 
   components: {
     NavbarComponent,
-    SidebarComponent
+    SidebarComponent,
+    UserComponent
   },
 
   data: () => ({}),
 
   computed: {
-    ...Vuex.mapGetters(['questions'])
+    ...Vuex.mapGetters(['questions', 'user'])
   },
 
   methods: {

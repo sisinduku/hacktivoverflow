@@ -7,12 +7,22 @@
         <b-button size="sm" variant="primary" :to="{name: 'detail', params: {slug: question.slug}}">
           Read More
         </b-button>
+        <b-button v-if="(question.voted === 'unvote' || question.voted === 'downvoted') && Object.keys(user).length !== 0" size="sm" variant="primary" @click="upVote(question._id)">
+          <span class="fa fa-thumbs-up"></span>
+        </b-button>
+        <b-button v-if="(question.voted === 'unvote' || question.voted === 'upvoted') && Object.keys(user).length !== 0" size="sm" variant="danger" @clock="downVote(question._id)">
+          <span class="fa fa-thumbs-down"></span>
+        </b-button>
+        <b-button v-if="isQuestionOwner(question)" size="sm" variant="info" @clock="downVote(question._id)">
+          <span class="fa fa-edit"></span>Edit
+        </b-button>
       </b-list-group-item>
     </b-list-group>
   </div>
 </template>
 <script>
 import striptags from 'striptags'
+import {mapGetters} from 'vuex'
 export default {
   name: 'QuestionsSummaryComponent',
 
@@ -20,7 +30,23 @@ export default {
 
   data: () => ({}),
 
+  computed: {
+    ...mapGetters(['user'])
+  },
+
   methods: {
+    isQuestionOwner (question) {
+      if (Object.keys(this.user).length === 0) {
+        console.log('halo')
+        return false
+      } else {
+        if (this.user._id === question.author._id) {
+          return true
+        } else {
+          return false
+        }
+      }
+    },
     formatSummary (value) {
       let striped = striptags(value)
       if (striped.length > 200) {
@@ -28,9 +54,28 @@ export default {
         striped = stripedCut.substring(0, striped.indexOf(' ')) + '...'
       }
       return striped
+    },
+    upvote (id) {
+      let idx = this.questions.findIndex(question => question._id === id)
+      if (this.questions[idx].voted !== 'upvoted') {
+        if (this.questions[idx].voted === 'unvote') {
+
+        }
+      }
+    },
+    downvote (id) {
+      let idx = this.questions.findIndex(question => question._id === id)
+      if (this.questions[idx].voted !== 'downvoted') {
+        if (this.questions[idx].voted === 'unvote') {
+
+        }
+      }
     }
   }
 }
 </script>
 <style scoped>
+  button {
+    cursor: pointer;
+  }
 </style>

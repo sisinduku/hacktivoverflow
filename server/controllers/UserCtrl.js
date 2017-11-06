@@ -25,25 +25,27 @@ class UserCtrl {
           profilePic: result.picture.data.url,
           lastLogin: new Date()
         }, {
+          new: true,
           upsert: true,
           setDefaultsOnInsert: true
         })
         .then((user) => {
-          console.log(user);
           let token = jwt.sign({
             userID: result.id,
             name: result.name,
             email: result.email
           }, process.env.THIS_SECRET)
 
-          res.status(200).json({
-            token: token,
-            userID: result.id,
-            name: result.name,
-            email: result.email,
-            profilePic: result.picture.data.url,
-            lastLogin: (user) ? user.lastLogin : null
-          });
+          res.status(200)
+            .json({
+              token: token,
+              _id: user._id,
+              userID: result.id,
+              name: result.name,
+              email: result.email,
+              profilePic: result.picture.data.url,
+              lastLogin: (user) ? user.lastLogin : null
+            });
         })
     })
   }

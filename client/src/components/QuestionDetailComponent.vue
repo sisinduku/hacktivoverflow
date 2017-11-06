@@ -3,6 +3,7 @@
     <b-list-group>
       <b-list-group-item :key="question._id" class="text-justify">
         <h2>{{question.title}}</h2>
+        <p v-html="question.content"></p>
       </b-list-group-item>
     </b-list-group>
   </div>
