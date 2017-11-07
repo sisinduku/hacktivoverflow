@@ -14,20 +14,31 @@ export default new Vuex.Store({
 
   state: {
     questions: [],
+    currentQuestion: {},
     user: {
       userID: ''
     },
-    isLogin: false
+    isLogin: false,
+    showEdit: false
   },
 
   getters: {
     questions: state => state.questions,
     user: state => state.user,
     sortedQuestions: state => _.sortBy(state.questions, ['totalvotes'])
-      .reverse()
+      .reverse(),
+    question: state => (slug) => {
+      let question = state.questions.filter(question =>
+        question.slug === slug
+      )
+      return question[0]
+    }
   },
 
   mutations: {
+    currentQuestion: (state, payload) => {
+      state.currentQuestion = Object.assign({}, state.currentQuestion, payload)
+    },
     setQuestions: (state, payload) => {
       state.questions = payload
     },
@@ -53,6 +64,9 @@ export default new Vuex.Store({
       state.user = Object.assign({}, state.user, {
         userID: ''
       })
+    },
+    toggleEdit: (state, payload) => {
+      state.showEdit = !state.showEdit
     }
   },
 
@@ -86,6 +100,27 @@ export default new Vuex.Store({
         .catch((err) => {
           console.error(err)
         })
+    },
+    updateQuestion: (context, payload) => {
+      return new Promise(function (resolve, reject) {
+        http.post(`/api/questions/update_question/${payload.questionId}`, {
+          title: payload.title,
+          content: payload.content,
+          author: payload.author
+        })
+          .then(({
+            data
+          }) => {
+            context.commit('updateQuestion', {
+              question: data
+            })
+            resolve()
+          })
+          .catch((err) => {
+            console.error(err)
+            reject(err)
+          })
+      })
     },
     getToken: (context, payload) => {
       http.post('/api/auth/get_authenticate', {}, {

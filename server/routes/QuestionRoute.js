@@ -9,5 +9,6 @@ router.get('/get_question/:slug', QuestionCtrl.getQuestionBySlug);
 router.post('/upvote/:questionId', QuestionCtrl.upvoteQuestion);
 router.post('/downvote/:questionId', QuestionCtrl.downvoteQuestion);
 router.post('/unvote/:questionId', QuestionCtrl.unvoteQuestion);
+router.post('/update_question/:questionId', QuestionCtrl.updateQuestion);
 
 module.exports = router;

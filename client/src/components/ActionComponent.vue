@@ -1,20 +1,20 @@
 <template>
   <b-row id='ActionTemplate' no-gutters style="padding-top: 5px">
     <b-col>
-      <b-button size="sm" variant="primary" @click="upVote(question._id)">
+      <b-button v-if="isLogin" size="sm" variant="primary" @click="upVote(question._id)">
         <span class="fa fa-thumbs-up">{{question.upvotes}}</span>
       </b-button>
-      <b-button size="sm" variant="danger" @click="downVote(question._id)">
+      <b-button v-if="isLogin" size="sm" variant="danger" @click="downVote(question._id)">
         <span class="fa fa-thumbs-down">{{question.downvotes}}</span>
       </b-button>
-      <b-button v-if="isLogin && question.author.userID === user.userID" size="sm" variant="info">
+      <b-button v-if="isLogin && question.author.userID === user.userID" size="sm" variant="info" :to="{name: 'edit', params: {slug: question.slug}}">
         <span class="fa fa-edit"></span>Edit
       </b-button>
     </b-col>
   </b-row>
 </template>
 <script>
-import {mapState, mapActions, mapGetters} from 'vuex'
+import {mapState, mapActions, mapGetters, mapMutations} from 'vuex'
 export default {
   name: 'ActionTemplate',
 
@@ -33,17 +33,16 @@ export default {
   data: () => ({}),
 
   methods: {
-    ...mapActions(['upvote', 'downvote', 'unvote']),
+    ...mapActions(['upvote', 'downvote', 'unvote', 'updateQuestion']),
+    ...mapMutations(['currentQuestion', 'toggleEdit']),
     upVote (id) {
       let idx = this.questions.findIndex(question => question._id === id)
       if (this.questions[idx].voted !== 'upvoted') {
         if (this.questions[idx].voted === 'unvote') {
-          console.log(this.questions[idx].voted)
           this.upvote({
             questionId: id
           })
         } else {
-          console.log(this.questions[idx].voted)
           this.unvote({
             questionId: id
           })
@@ -54,13 +53,13 @@ export default {
             })
         }
       } else {
-        console.log(this.questions[idx].voted)
         this.unvote({
           questionId: id
         })
       }
     },
     downVote (id) {
+      console.log('upvote ', id)
       let idx = this.questions.findIndex(question => question._id === id)
       if (this.questions[idx].voted !== 'downvoted') {
         if (this.questions[idx].voted === 'unvote') {
@@ -78,11 +77,14 @@ export default {
             })
         }
       } else {
-        console.log('asd')
         this.unvote({
           questionId: id
         })
       }
+    },
+    showEdit () {
+      this.currentQuestion(this.question)
+      this.toggleEdit()
     }
   }
 }

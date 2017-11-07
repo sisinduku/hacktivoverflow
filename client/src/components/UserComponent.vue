@@ -1,12 +1,27 @@
 <template>
 <div id='UserComponent' class="text-left">
+  <!-- Modal Update Component -->
+  <b-modal v-model="showEdit" ref="modaleditquestion" title="User Action" @ok="handleOkUpdate" @shown="clearInput" @hide="onHidden">
+    <form>
+      <b-form-group label="Title:" @submit.stop.prevent="handleUpdate">
+        <b-form-input type="text" placeholder="Question Title" v-model="titleEdit"></b-form-input>
+      </b-form-group>
+      <b-form-group label="Content:">
+        <wysiwyg v-model="contentEdit" />
+      </b-form-group>
+    </form>
+    <b-alert v-if="validation" show variant="danger">
+      <ul v-html="validation"></ul>
+    </b-alert>
+  </b-modal>
+
   <b-btn v-b-modal="'modaluser'" size="sm">Add Question</b-btn>
 
   <!-- Modal Component -->
   <b-modal id="modaluser" ref="modaluser" title="User Action" @ok="handleOk" @shown="clearInput">
-    <form @submit.stop.prevent="handleSubmit">
-      <b-form-group label="Title:">
-        <b-form-input type="text" placeholder="Questoin Title" v-model="title"></b-form-input>
+    <form>
+      <b-form-group label="Title:" @submit.stop.prevent="handlePost">
+        <b-form-input type="text" placeholder="Question Title" v-model="title"></b-form-input>
       </b-form-group>
       <b-form-group label="Content:">
         <wysiwyg v-model="content" />
@@ -21,7 +36,8 @@
 <script>
 import {
   mapActions,
-  mapGetters
+  mapGetters,
+  mapState
 } from 'vuex'
 
 export default {
@@ -32,15 +48,35 @@ export default {
   data: () => ({
     title: '',
     content: '',
-    validation: ''
+    validation: '',
+    modaledit: false,
+    titleEdit: '',
+    contentEdit: ''
   }),
 
   computed: {
-    ...mapGetters(['user'])
+    ...mapGetters(['user']),
+    ...mapState(['showEdit', 'currentQuestion']),
+    titleEditBind: {
+      get: function () {
+        return this.currentQuestion.title
+      },
+      set: function (newValue) {
+        this.titleEdit = newValue
+      }
+    },
+    contentEditBind: {
+      get: function () {
+        return this.currentQuestion.content
+      },
+      set: function (newValue) {
+        this.contentEdit = newValue
+      }
+    }
   },
 
   methods: {
-    ...mapActions(['postQuestion']),
+    ...mapActions(['postQuestion', 'updateQuestion']),
     handleOk (evt) {
       // Prevent modal from closing
       evt.preventDefault()
@@ -52,19 +88,54 @@ export default {
         this.validation += '<li>Please enter content</li>'
       }
       if (this.content && this.title) {
-        console.log('here')
-        this.postQuestion({
-          title: this.title,
-          content: this.content,
-          author: this.user._id
-        })
-        this.$refs.modaluser.hide()
-        this.clearInput()
+        this.handlePost()
       }
+    },
+    handlePost () {
+      this.postQuestion({
+        title: this.title,
+        content: this.content,
+        author: this.user._id
+      })
+      this.$refs.modaluser.hide()
+      this.clearInput()
     },
     clearInput () {
       this.title = ''
       this.content = ''
+    },
+    handleOkUpdate (evt2) {
+      // Prevent modal from closing
+      evt2.preventDefault()
+      console.log('SNII')
+      this.validation = ''
+      if (!this.titleEdit) {
+        this.validation += '<li>Please enter question title</li>'
+      }
+      if (!this.contentEdit) {
+        this.validation += '<li>Please enter content</li>'
+      }
+      if (this.contentEdit && this.titleEdit) {
+        this.handleUpdate()
+      }
+    },
+    handleUpdate () {
+      this.updateQuestion({
+        title: this.titleEdit,
+        content: this.contentEdit,
+        author: this.user._id,
+        questionId: this.question._id
+      })
+      console.log('update')
+      this.clearEditInput()
+    },
+    onHidden (evt) {
+      this.validation = ''
+      this.$store.commit('toggleEdit')
+    },
+    clearEditInput () {
+      this.titleEditBind = ''
+      this.contentEditBind = ''
     }
   }
 }

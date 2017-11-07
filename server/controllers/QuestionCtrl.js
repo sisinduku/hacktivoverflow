@@ -51,8 +51,16 @@ class QuestionCtrl {
         author: req.body.author,
       })
       .then((question) => {
-        res.status(201)
-          .json(question);
+        Question.aggregate(queryQuestionById(req.body.author, question._id))
+          .then((queriedQuestion) => {
+            Question.populate(queriedQuestion, {
+                path: 'author'
+              })
+              .then(populatedQuestion => {
+                res.status(200)
+                  .json(populatedQuestion[0])
+              })
+          })
       })
   }
 
@@ -227,6 +235,33 @@ class QuestionCtrl {
       })
       .then((question) => {
         Question.aggregate(queryQuestionById(req.body.user, req.params.questionId))
+          .then((queriedQuestion) => {
+            Question.populate(queriedQuestion, {
+                path: 'author'
+              })
+              .then(populatedQuestion => {
+                res.status(200)
+                  .json(populatedQuestion[0])
+              })
+          })
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(400)
+          .json(err);
+      })
+  }
+
+  static updateQuestion(req, res, next) {
+    Question.findOneAndUpdate({
+        _id: req.params.questionId
+      }, {
+        title: req.body.title,
+        content: req.body.content,
+        author: mongoose.Types.ObjectId(req.body.author)
+      })
+      .then((question) => {
+        Question.aggregate(queryQuestionById(req.body.author, req.params.questionId))
           .then((queriedQuestion) => {
             Question.populate(queriedQuestion, {
                 path: 'author'

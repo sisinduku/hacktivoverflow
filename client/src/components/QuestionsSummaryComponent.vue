@@ -1,31 +1,38 @@
 <template>
-  <div id='QuestionsSummaryComponent'>
-    <b-list-group>
-      <b-list-group-item v-for="(question, index) in sortedQuestions" :key="question._id" class="text-left">
-        <h2>{{question.title}}</h2>
-        <p>{{formatSummary(question.content)}}</p>
-        <b-button size="sm" variant="primary" :to="{name: 'detail', params: {slug: question.slug}}">
-          Read More
-        </b-button>
-        <ActionTemplate :question="question"></ActionTemplate>
-      </b-list-group-item>
-    </b-list-group>
-  </div>
+<div id='QuestionsSummaryComponent'>
+  <b-list-group>
+    <b-list-group-item v-for="(question, index) in sortedQuestions" :key="question._id" class="text-left">
+      <h2>{{question.title}}</h2>
+      <p>{{formatSummary(question.content)}}</p>
+      <b-button size="sm" variant="primary" :to="{name: 'detail', params: {slug: question.slug}}">
+        Read More
+      </b-button>
+      <ActionComponent :question="question"></ActionComponent>
+    </b-list-group-item>
+  </b-list-group>
+</div>
 </template>
 <script>
 import striptags from 'striptags'
-import { mapGetters } from 'vuex'
-import ActionTemplate from './ActionComponent.vue'
+import {
+  mapState,
+  mapGetters
+} from 'vuex'
+import ActionComponent from './ActionComponent.vue'
 export default {
   name: 'QuestionsSummaryComponent',
 
   components: {
-    ActionTemplate
+    ActionComponent
   },
 
   computed: {
+    ...mapState([
+      'isLogin'
+    ]),
     ...mapGetters([
-      'sortedQuestions'
+      'sortedQuestions',
+      'user'
     ])
   },
 
@@ -42,7 +49,7 @@ export default {
 }
 </script>
 <style scoped>
-  button {
-    cursor: pointer;
-  }
+button {
+  cursor: pointer;
+}
 </style>

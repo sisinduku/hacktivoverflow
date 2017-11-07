@@ -1,5 +1,5 @@
 <template>
-  <div id='QuestionDetailComponent'>
+  <div id='AnswerListComponent'>
     <b-list-group>
       <b-list-group-item class="text-justify">
         <h2>{{question.title}}</h2>
@@ -17,27 +17,14 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex'
-import ActionComponent from './ActionComponent.vue'
 export default {
-  name: 'QuestionDetailComponent',
+  name: 'AnswerListComponent',
 
-  components: {
-    ActionComponent
-  },
+  props: ['answers'],
 
-  props: ['slug'],
+  data: () => ({
 
-  data: () => ({}),
-
-  computed: {
-    question () {
-      return this.$store.getters.question(this.slug)
-    },
-    ...mapState([
-      'isLogin'
-    ])
-  }
+  })
 }
 </script>
 <style scoped>
