@@ -1,20 +1,5 @@
 <template>
 <div id='UserComponent' class="text-left">
-  <!-- Modal Update Component -->
-  <b-modal v-model="showEdit" ref="modaleditquestion" title="User Action" @ok="handleOkUpdate" @shown="clearInput" @hide="onHidden">
-    <form>
-      <b-form-group label="Title:" @submit.stop.prevent="handleUpdate">
-        <b-form-input type="text" placeholder="Question Title" v-model="titleEdit"></b-form-input>
-      </b-form-group>
-      <b-form-group label="Content:">
-        <wysiwyg v-model="contentEdit" />
-      </b-form-group>
-    </form>
-    <b-alert v-if="validation" show variant="danger">
-      <ul v-html="validation"></ul>
-    </b-alert>
-  </b-modal>
-
   <b-btn v-b-modal="'modaluser'" size="sm">Add Question</b-btn>
 
   <!-- Modal Component -->

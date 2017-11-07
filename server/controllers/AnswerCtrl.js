@@ -1,17 +1,75 @@
 const Answer = require('../models/Answer');
 const mongoose = require('mongoose');
 
-class QuestionCtrl {
+const queryAnswerById = (user, answerId) => {
+  return [{
+    $addFields: {
+      voted: {
+        $cond: {
+          if: {
+            $in: [mongoose.Types.ObjectId(user), "$upvoters"]
+          },
+          then: 'upvoted',
+          else: {
+            $cond: {
+              if: {
+                $in: [mongoose.Types.ObjectId(user), "$downvoters"]
+              },
+              then: 'downvoted',
+              else: 'unvote'
+            }
+          }
+        }
+      },
+      upvotes: {
+        $size: "$upvoters"
+      },
+      downvotes: {
+        $size: "$downvoters"
+      },
+      totalvotes: {
+        $subtract: [{
+          $size: "$upvoters"
+        }, {
+          $size: "$downvoters"
+        }]
+      }
+    }
+  }, {
+    $match: {
+      _id: mongoose.Types.ObjectId(answerId)
+    }
+  }]
+}
+
+class AnswerCtrl {
 
   static postAnswer(req, res, next) {
     Answer.create({
-        author: req.body.user,
         content: req.body.content,
+        question: req.body.question,
         author: req.body.author,
       })
       .then((answer) => {
-        res.status(201)
-          .json(answer);
+        Answer.aggregate(queryAnswerById(req.body.author, answer._id))
+          .then((queriedAnswer) => {
+            Answer.populate(queriedAnswer, {
+                path: 'author'
+              })
+              .then(populatedAnswer => {
+                res.status(201)
+                  .json(populatedAnswer[0]);
+              })
+              .catch((err) => {
+                console.error(err);
+              })
+          })
+          .catch((err) => {
+            console.error(err);
+          })
+      })
+      .catch((err) => {
+        console.error(err);
       })
   }
 
@@ -51,7 +109,7 @@ class QuestionCtrl {
         }
       }, {
         $match: {
-          question: req.params.question
+          question: mongoose.Types.ObjectId(req.params.questionId)
         }
       }])
       .then((answers) => {
@@ -59,6 +117,7 @@ class QuestionCtrl {
             path: "author"
           })
           .then((answersPopulated) => {
+            console.log(answersPopulated);
             res.status(200)
               .json(answersPopulated);
           })

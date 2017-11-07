@@ -86,6 +86,24 @@ export default new Vuex.Store({
           console.error(err)
         })
     },
+    getAnswers: (context, payload) => {
+      return new Promise(function (resolve, reject) {
+        let id = ''
+        if (context.state.isLogin) {
+          id = context.state.user._id
+        }
+        http.get(`/api/answers/get_answers/${id}/${payload}`)
+          .then(({
+            data
+          }) => {
+            resolve(data)
+          })
+          .catch((err) => {
+            console.error(err)
+            reject(err)
+          })
+      })
+    },
     postQuestion: (context, payload) => {
       http.post(`/api/questions/post_question`, {
         title: payload.title,
