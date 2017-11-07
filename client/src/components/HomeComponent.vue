@@ -46,7 +46,7 @@ export default {
 
   computed: {
     ...Vuex.mapState(['isLogin']),
-    ...Vuex.mapGetters(['questions', 'user'])
+    ...Vuex.mapGetters(['questions'])
   },
 
   methods: {
@@ -54,7 +54,9 @@ export default {
   },
 
   created () {
-    this.getAllQuestions()
+    if (this.isLogin) {
+      this.getAllQuestions()
+    }
   }
 }
 </script>

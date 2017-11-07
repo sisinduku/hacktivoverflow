@@ -1,6 +1,6 @@
 <template>
 <div id='UserComponent' class="text-left">
-  <b-btn v-b-modal="'modaluser'">Modal</b-btn>
+  <b-btn v-b-modal="'modaluser'" size="sm">Add Question</b-btn>
 
   <!-- Modal Component -->
   <b-modal id="modaluser" ref="modaluser" title="User Action" @ok="handleOk" @shown="clearInput">

@@ -1,6 +1,47 @@
 const Question = require('../models/Question');
 const mongoose = require('mongoose');
 
+const queryQuestionById = (user, questionId) => {
+  return [{
+    $addFields: {
+      voted: {
+        $cond: {
+          if: {
+            $in: [mongoose.Types.ObjectId(user), "$upvoters"]
+          },
+          then: 'upvoted',
+          else: {
+            $cond: {
+              if: {
+                $in: [mongoose.Types.ObjectId(user), "$downvoters"]
+              },
+              then: 'downvoted',
+              else: 'unvote'
+            }
+          }
+        }
+      },
+      upvotes: {
+        $size: "$upvoters"
+      },
+      downvotes: {
+        $size: "$downvoters"
+      },
+      totalvotes: {
+        $subtract: [{
+          $size: "$upvoters"
+        }, {
+          $size: "$downvoters"
+        }]
+      }
+    }
+  }, {
+    $match: {
+      _id: mongoose.Types.ObjectId(questionId)
+    }
+  }]
+}
+
 class QuestionCtrl {
   static postQuestion(req, res, next) {
     console.log(req.body);
@@ -126,8 +167,16 @@ class QuestionCtrl {
         new: true
       })
       .then((question) => {
-        res.status(200)
-          .json(question);
+        Question.aggregate(queryQuestionById(req.body.user, req.params.questionId))
+          .then((queriedQuestion) => {
+            Question.populate(queriedQuestion, {
+                path: 'author'
+              })
+              .then(populatedQuestion => {
+                res.status(200)
+                  .json(populatedQuestion[0])
+              })
+          })
       })
       .catch((err) => {
         console.error(err);
@@ -147,8 +196,16 @@ class QuestionCtrl {
         new: true
       })
       .then((question) => {
-        res.status(200)
-          .json(question);
+        Question.aggregate(queryQuestionById(req.body.user, req.params.questionId))
+          .then((queriedQuestion) => {
+            Question.populate(queriedQuestion, {
+                path: 'author'
+              })
+              .then(populatedQuestion => {
+                res.status(200)
+                  .json(populatedQuestion[0])
+              })
+          })
       })
       .catch((err) => {
         console.error(err);
@@ -162,17 +219,23 @@ class QuestionCtrl {
         _id: req.params.questionId
       }, {
         $pull: {
-          downvoters: req.body.user
-        },
-        $pull: {
+          downvoters: req.body.user,
           upvoters: req.body.user
         }
       }, {
         new: true
       })
       .then((question) => {
-        res.status(200)
-          .json(question);
+        Question.aggregate(queryQuestionById(req.body.user, req.params.questionId))
+          .then((queriedQuestion) => {
+            Question.populate(queriedQuestion, {
+                path: 'author'
+              })
+              .then(populatedQuestion => {
+                res.status(200)
+                  .json(populatedQuestion[0])
+              })
+          })
       })
       .catch((err) => {
         console.error(err);
