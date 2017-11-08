@@ -54,9 +54,9 @@ export default {
   methods: {
     formatSummary (value) {
       let striped = striptags(value)
-      if (striped.length > 200) {
-        let stripedCut = striped.substring(0, 200)
-        striped = stripedCut.substring(0, striped.indexOf(' ')) + '...'
+      if (striped.length > 500) {
+        let stripedCut = striped.substring(0, 500)
+        striped = stripedCut.substring(0, stripedCut.lastIndexOf(' ')) + '...'
       }
       return striped
     },

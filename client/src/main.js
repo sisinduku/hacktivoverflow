@@ -25,7 +25,7 @@ Vue.use(wysiwyg, {
 })
 
 Vue.prototype.$http = axios.create({
-  baseURL: 'https://overflow.mepawz.com'
+  baseURL: 'http://localhost:3000'
 })
 
 Vue.config.productionTip = false

@@ -5,7 +5,7 @@ import jwtDecode from 'jwt-decode'
 import _ from 'lodash'
 
 const http = axios.create({
-  baseURL: 'https://overflow.mepawz.com'
+  baseURL: 'http://localhost:3000'
 })
 Vue.use(Vuex)
 
