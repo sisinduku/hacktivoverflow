@@ -7,7 +7,7 @@
       <b-button v-if="isLogin" size="sm" variant="danger" @click="downVote(question._id)">
         <span class="fa fa-thumbs-down">{{question.downvotes}}</span>
       </b-button>
-      <b-button v-if="isLogin && question.author.userID === user.userID" size="sm" variant="info" :to="{name: 'edit', params: {slug: question.slug}}">
+      <b-button v-if="isLogin && question.author.userID === user.userID" size="sm" variant="info" :to="{name: 'edit_question', params: {slug: question.slug}}">
         <span class="fa fa-edit"></span>Edit
       </b-button>
     </b-col>

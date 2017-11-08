@@ -4,7 +4,7 @@
       <b-list-group-item class="text-justify">
         <h2>{{question.title}}</h2>
         <p v-html="question.content"></p>
-        <small>Created by: {{question.author.name}}</small>
+        <small>Created by: {{question.author.name}} on: {{dateFormat}}</small>
         <ActionComponent :question="question"></ActionComponent>
         <b-row style="padding-top: 5px" class="text-left">
           <b-col>
@@ -33,6 +33,7 @@
 </template>
 <script>
 import { mapState } from 'vuex'
+import moment from 'moment'
 import ActionComponent from './ActionComponent.vue'
 import AnswerListComponent from './AnswerListComponent.vue'
 export default {
@@ -56,7 +57,10 @@ export default {
     },
     ...mapState([
       'isLogin', 'user'
-    ])
+    ]),
+    dateFormat () {
+      return moment(this.question.createdAt).format('D MMM YYYY')
+    }
   },
 
   methods: {

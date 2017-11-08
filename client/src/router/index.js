@@ -4,6 +4,7 @@ import HomeComponent from '@/components/HomeComponent'
 import QuestionsSummaryComponent from '@/components/QuestionsSummaryComponent'
 import QuestionDetailComponent from '@/components/QuestionDetailComponent'
 import UpdateQuestionComponent from '@/components/UpdateQuestionComponent'
+import UpdateAnswerComponent from '@/components/UpdateAnswerComponent'
 
 Vue.use(Router)
 
@@ -22,9 +23,14 @@ export default new Router({
       component: QuestionDetailComponent,
       props: true
     }, {
-      path: 'edit/:slug',
-      name: 'edit',
+      path: 'question/edit/:slug',
+      name: 'edit_question',
       component: UpdateQuestionComponent,
+      props: true
+    }, {
+      path: 'answer/edit/:id',
+      name: 'edit_answer',
+      component: UpdateAnswerComponent,
       props: true
     }]
   }]

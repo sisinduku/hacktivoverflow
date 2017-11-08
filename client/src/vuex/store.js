@@ -14,6 +14,7 @@ export default new Vuex.Store({
 
   state: {
     questions: [],
+    answers: [],
     currentQuestion: {},
     user: {
       userID: ''
@@ -42,6 +43,9 @@ export default new Vuex.Store({
     setQuestions: (state, payload) => {
       state.questions = payload
     },
+    setAnswers: (state, payload) => {
+      state.answers = payload
+    },
     addQuestion: (state, payload) => {
       state.questions.push(payload)
     },
@@ -50,6 +54,12 @@ export default new Vuex.Store({
         question._id === payload.question._id
       )
       state.questions.splice(idx, 1, payload.question)
+    },
+    updateAnswer: (state, payload) => {
+      let idx = state.answers.findIndex(answer =>
+        answer._id === payload.answer._id
+      )
+      state.answers.splice(idx, 1, payload.answer)
     },
     setUser: (state, payload) => {
       const token = window.localStorage.getItem('token')
@@ -96,6 +106,7 @@ export default new Vuex.Store({
           .then(({
             data
           }) => {
+            context.commit('setAnswers', data)
             resolve(data)
           })
           .catch((err) => {
@@ -131,6 +142,26 @@ export default new Vuex.Store({
           }) => {
             context.commit('updateQuestion', {
               question: data
+            })
+            resolve()
+          })
+          .catch((err) => {
+            console.error(err)
+            reject(err)
+          })
+      })
+    },
+    updateAnswer: (context, payload) => {
+      return new Promise(function (resolve, reject) {
+        http.post(`/api/answers/update_answer/${payload.answerId}`, {
+          content: payload.content,
+          author: payload.author
+        })
+          .then(({
+            data
+          }) => {
+            context.commit('updateAnswer', {
+              answer: data
             })
             resolve()
           })
@@ -205,6 +236,63 @@ export default new Vuex.Store({
             resolve()
           })
           .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    upvoteAns (context, payload) {
+      return new Promise(function (resolve, reject) {
+        http.put(`/api/answers/upvote/${payload.answerId}`, {
+          user: context.state.user._id
+        })
+          .then(({
+            data
+          }) => {
+            context.commit('updateAnswer', {
+              answer: data
+            })
+            resolve()
+          })
+          .catch((err) => {
+            console.error(err)
+            reject(err)
+          })
+      })
+    },
+    downvoteAns (context, payload) {
+      return new Promise(function (resolve, reject) {
+        http.put(`/api/answers/downvote/${payload.answerId}`, {
+          user: context.state.user._id
+        })
+          .then(({
+            data
+          }) => {
+            context.commit('updateAnswer', {
+              answer: data
+            })
+            resolve()
+          })
+          .catch((err) => {
+            console.error(err)
+            reject(err)
+          })
+      })
+    },
+    unvoteAns (context, payload) {
+      return new Promise(function (resolve, reject) {
+        http.put(`/api/answers/unvote/${payload.answerId}`, {
+          user: context.state.user._id
+        })
+          .then(({
+            data
+          }) => {
+            context.commit('updateAnswer', {
+              answer: data
+            })
+            resolve()
+          })
+          .catch((err) => {
+            console.error(err)
             reject(err)
           })
       })

@@ -124,9 +124,60 @@ class AnswerCtrl {
       })
   }
 
+  static getAnswer(req, res, next) {
+    Answer.aggregate([{
+        $addFields: {
+          voted: {
+            $cond: {
+              if: {
+                $in: [mongoose.Types.ObjectId(req.params.user), "$upvoters"]
+              },
+              then: 'upvoted',
+              else: {
+                $cond: {
+                  if: {
+                    $in: [mongoose.Types.ObjectId(req.params.user), "$downvoters"]
+                  },
+                  then: 'downvoted',
+                  else: 'unvote'
+                }
+              }
+            }
+          },
+          upvotes: {
+            $size: "$upvoters"
+          },
+          downvotes: {
+            $size: "$downvoters"
+          },
+          totalvotes: {
+            $subtract: [{
+              $size: "$upvoters"
+            }, {
+              $size: "$downvoters"
+            }]
+          }
+        }
+      }, {
+        $match: {
+          _id: mongoose.Types.ObjectId(req.params.answerId)
+        }
+      }])
+      .then((answers) => {
+        Answer.populate(answers, {
+            path: "author"
+          })
+          .then((answersPopulated) => {
+            console.log(answersPopulated);
+            res.status(200)
+              .json(answersPopulated[0]);
+          })
+      })
+  }
+
   static upvoteAnswer(req, res, next) {
     Answer.findOneAndUpdate({
-        _id: req.body.answerId
+        _id: req.params.answerId
       }, {
         $push: {
           upvoters: req.body.user
@@ -135,8 +186,16 @@ class AnswerCtrl {
         new: true
       })
       .then((answer) => {
-        res.status(200)
-          .json(answer);
+        Answer.aggregate(queryAnswerById(req.body.user, req.params.answerId))
+          .then((queriedAnswer) => {
+            Answer.populate(queriedAnswer, {
+                path: 'author'
+              })
+              .then(populatedAnswer => {
+                res.status(200)
+                  .json(populatedAnswer[0])
+              })
+          })
       })
       .catch((err) => {
         console.error(err);
@@ -147,7 +206,7 @@ class AnswerCtrl {
 
   static downvoteAnswer(req, res, next) {
     Answer.findOneAndUpdate({
-        _id: req.body.answerId
+        _id: req.params.answerId
       }, {
         $push: {
           downvoters: req.body.user
@@ -156,8 +215,16 @@ class AnswerCtrl {
         new: true
       })
       .then((answer) => {
-        res.status(200)
-          .json(answer);
+        Answer.aggregate(queryAnswerById(req.body.user, req.params.answerId))
+          .then((queriedAnswer) => {
+            Answer.populate(queriedAnswer, {
+                path: 'author'
+              })
+              .then(populatedAnswer => {
+                res.status(200)
+                  .json(populatedAnswer[0])
+              })
+          })
       })
       .catch((err) => {
         console.error(err);
@@ -168,20 +235,53 @@ class AnswerCtrl {
 
   static unvoteAnswer(req, res, next) {
     Answer.findOneAndUpdate({
-        _id: req.body.answerId
+        _id: req.params.answerId
       }, {
         $pull: {
-          downvoters: req.body.user
-        },
-        $pull: {
+          downvoters: req.body.user,
           upvoters: req.body.user
         }
       }, {
         new: true
       })
       .then((answer) => {
-        res.status(200)
-          .json(answer);
+        Answer.aggregate(queryAnswerById(req.body.user, req.params.answerId))
+          .then((queriedAnswer) => {
+            Answer.populate(queriedAnswer, {
+                path: 'author'
+              })
+              .then(populatedAnswer => {
+                console.log(populatedAnswer[0]);
+                res.status(200)
+                  .json(populatedAnswer[0])
+              })
+          })
+      })
+      .catch((err) => {
+        console.error('error ', err);
+        res.status(400)
+          .json(err);
+      })
+  }
+
+  static updateAnswer(req, res, next) {
+    Answer.findOneAndUpdate({
+        _id: req.params.answerId
+      }, {
+        content: req.body.content,
+        author: mongoose.Types.ObjectId(req.body.author)
+      })
+      .then((answer) => {
+        Answer.aggregate(queryAnswerById(req.body.author, req.params.answerId))
+          .then((queriedAnswer) => {
+            Answer.populate(queriedAnswer, {
+                path: 'author'
+              })
+              .then(populatedAnswer => {
+                res.status(200)
+                  .json(populatedAnswer[0])
+              })
+          })
       })
       .catch((err) => {
         console.error(err);
