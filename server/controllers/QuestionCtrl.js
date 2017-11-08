@@ -278,6 +278,24 @@ class QuestionCtrl {
           .json(err);
       })
   }
+
+  static deleteQuestion(req, res, next) {
+    Question.findOneAndRemove({
+        _id: req.params.answerId
+      })
+      .then(question => {
+        Question.aggregate(queryAnswerById(req.body.author, req.params.questionId))
+          .then((queriedQuestin) => {
+            Question.populate(queriedQuestin, {
+                path: 'author'
+              })
+              .then(populatedQuestion => {
+                res.status(200)
+                  .json(populatedQuestion[0])
+              })
+          })
+      })
+  }
 }
 
 module.exports = QuestionCtrl;
