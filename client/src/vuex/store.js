@@ -5,7 +5,7 @@ import jwtDecode from 'jwt-decode'
 import _ from 'lodash'
 
 const http = axios.create({
-  baseURL: 'http://localhost:3000'
+  baseURL: 'https://overflow.mepawz.com'
 })
 Vue.use(Vuex)
 
@@ -49,17 +49,32 @@ export default new Vuex.Store({
     addQuestion: (state, payload) => {
       state.questions.push(payload)
     },
+    addAnswer: (state, payload) => {
+      state.answers.push(payload)
+    },
     updateQuestion: (state, payload) => {
       let idx = state.questions.findIndex(question =>
         question._id === payload.question._id
       )
       state.questions.splice(idx, 1, payload.question)
     },
+    deleteQuestion: (state, payload) => {
+      let idx = state.questions.findIndex(question =>
+        question._id === payload.question._id
+      )
+      state.questions.splice(idx, 1)
+    },
     updateAnswer: (state, payload) => {
       let idx = state.answers.findIndex(answer =>
         answer._id === payload.answer._id
       )
       state.answers.splice(idx, 1, payload.answer)
+    },
+    deleteAnswer: (state, payload) => {
+      let idx = state.answers.findIndex(answer =>
+        answer._id === payload.answer._id
+      )
+      state.answers.splice(idx, 1)
     },
     setUser: (state, payload) => {
       const token = window.localStorage.getItem('token')
@@ -130,6 +145,21 @@ export default new Vuex.Store({
           console.error(err)
         })
     },
+    postAnswer: (context, payload) => {
+      http.post(`/api/answers/post_answer`, {
+        content: payload.content,
+        question: payload.question._id,
+        author: payload.author
+      })
+        .then(({
+          data
+        }) => {
+          context.commit('addAnswer', data)
+        })
+        .catch((err) => {
+          console.error(err)
+        })
+    },
     updateQuestion: (context, payload) => {
       return new Promise(function (resolve, reject) {
         http.post(`/api/questions/update_question/${payload.questionId}`, {
@@ -151,6 +181,25 @@ export default new Vuex.Store({
           })
       })
     },
+    deleteQuestion: (context, payload) => {
+      return new Promise(function (resolve, reject) {
+        http.delete(`/api/questions/delete_question/${payload.questionId}`, {
+          author: payload.author
+        })
+          .then(({
+            data
+          }) => {
+            context.commit('deleteQuestion', {
+              question: data
+            })
+            resolve()
+          })
+          .catch((err) => {
+            console.error(err)
+            reject(err)
+          })
+      })
+    },
     updateAnswer: (context, payload) => {
       return new Promise(function (resolve, reject) {
         http.post(`/api/answers/update_answer/${payload.answerId}`, {
@@ -161,6 +210,25 @@ export default new Vuex.Store({
             data
           }) => {
             context.commit('updateAnswer', {
+              answer: data
+            })
+            resolve()
+          })
+          .catch((err) => {
+            console.error(err)
+            reject(err)
+          })
+      })
+    },
+    deleteAnswer: (context, payload) => {
+      return new Promise(function (resolve, reject) {
+        http.delete(`/api/answers/delete_answer/${payload.answerId}`, {
+          author: payload.author
+        })
+          .then(({
+            data
+          }) => {
+            context.commit('deleteAnswer', {
               answer: data
             })
             resolve()

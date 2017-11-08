@@ -54,9 +54,7 @@ export default {
   },
 
   created () {
-    if (this.isLogin) {
-      this.getAllQuestions()
-    }
+    this.getAllQuestions()
   }
 }
 </script>

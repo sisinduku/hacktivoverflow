@@ -10,5 +10,6 @@ router.put('/downvote/:answerId', AnswerCtrl.downvoteAnswer);
 router.put('/unvote/:answerId', AnswerCtrl.unvoteAnswer);
 router.post('/post_answer/', AnswerCtrl.postAnswer);
 router.post('/update_answer/:answerId', AnswerCtrl.updateAnswer);
+router.delete('/delete_answer/:answerId', AnswerCtrl.deleteAnswer);
 
 module.exports = router;

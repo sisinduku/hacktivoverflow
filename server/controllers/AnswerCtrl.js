@@ -289,6 +289,24 @@ class AnswerCtrl {
           .json(err);
       })
   }
+
+  static deleteAnswer(req, res, next) {
+    Answer.findOneAndRemove({
+        _id: req.params.answerId
+      })
+      .then(question => {
+        Answer.aggregate(queryAnswerById(req.body.author, req.params.answerId))
+          .then((queriedAnswer) => {
+            Answer.populate(queriedAnswer, {
+                path: 'author'
+              })
+              .then(populatedAnswer => {
+                res.status(200)
+                  .json(populatedAnswer[0])
+              })
+          })
+      })
+  }
 }
 
 module.exports = AnswerCtrl;
