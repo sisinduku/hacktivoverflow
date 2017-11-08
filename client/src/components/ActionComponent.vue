@@ -8,7 +8,10 @@
         <span class="fa fa-thumbs-down">{{question.downvotes}}</span>
       </b-button>
       <b-button v-if="isLogin && question.author.userID === user.userID" size="sm" variant="info" :to="{name: 'edit_question', params: {slug: question.slug}}">
-        <span class="fa fa-edit"></span>Edit
+        <span class="fa fa-edit"></span> Edit
+      </b-button>
+      <b-button v-if="isLogin && question.author.userID === user.userID" @click="deleteThisQuestion(question._id)" size="sm" variant="danger">
+        <span class="fa fa-remove"></span> Delete
       </b-button>
     </b-col>
   </b-row>
@@ -33,7 +36,7 @@ export default {
   data: () => ({}),
 
   methods: {
-    ...mapActions(['upvote', 'downvote', 'unvote', 'updateQuestion']),
+    ...mapActions(['upvote', 'downvote', 'unvote', 'updateQuestion', 'deleteQuestion']),
     ...mapMutations(['currentQuestion', 'toggleEdit']),
     upVote (id) {
       let idx = this.questions.findIndex(question => question._id === id)
@@ -85,6 +88,12 @@ export default {
     showEdit () {
       this.currentQuestion(this.question)
       this.toggleEdit()
+    },
+    deleteThisQuestion (id) {
+      this.deleteQuestion({
+        questionId: id,
+        author: this.user._id
+      })
     }
   }
 }

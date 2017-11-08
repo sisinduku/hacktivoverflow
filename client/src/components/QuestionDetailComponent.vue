@@ -2,9 +2,22 @@
   <div id='QuestionDetailComponent'>
     <b-list-group>
       <b-list-group-item class="text-justify">
-        <h2>{{question.title}}</h2>
-        <p v-html="question.content"></p>
-        <small>Created by: {{question.author.name}} on: {{dateFormat}}</small>
+        <b-row>
+          <b-col>
+            <h2>{{question.title}}</h2>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <p v-html="question.content"></p>
+          </b-col>
+        </b-row>
+        <b-row style="padding-bottom: 5px">
+          <b-col>
+            <b-img thumbnail fluid :src="question.author.profilePic" alt="Thumbnail" size="sm" />
+            <small>Created by: {{question.author.name}} on: {{dateFormat}}</small>
+          </b-col>
+        </b-row>
         <ActionComponent :question="question"></ActionComponent>
         <b-row style="padding-top: 5px" class="text-left">
           <b-col>
@@ -32,7 +45,7 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import moment from 'moment'
 import ActionComponent from './ActionComponent.vue'
 import AnswerListComponent from './AnswerListComponent.vue'
@@ -64,6 +77,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(['postAnswer']),
     handleOk (evt) {
       // Prevent modal from closing
       evt.preventDefault()
@@ -75,19 +89,11 @@ export default {
       }
     },
     handlePost () {
-      this.$http.post(`/api/answers/post_answer`, {
+      this.postAnswer({
         content: this.content,
-        question: this.question._id,
+        question: this.question,
         author: this.user._id
       })
-        .then(({
-          data
-        }) => {
-          console.log(data)
-        })
-        .catch((err) => {
-          console.error(err)
-        })
       this.$refs.modalanswer.hide()
       this.clearInput()
     },
